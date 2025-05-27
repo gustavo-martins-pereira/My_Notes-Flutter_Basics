@@ -13,28 +13,13 @@ Future<void> main() async {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
-      home: const RegisterView(),
+      home: const HomePage(),
     )
   );
 }
 
-class RegisterView extends StatefulWidget {
-  const RegisterView({super.key});
-
-  @override
-  State<RegisterView> createState() => _RegisterViewState();
-}
-
-class _RegisterViewState extends State<RegisterView> {
-  late final TextEditingController _email = TextEditingController();
-  late final TextEditingController _password = TextEditingController();
-
-  @override
-  void dispose() {
-    _email.dispose();
-    _password.dispose();
-    super.dispose();
-  }
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -50,55 +35,14 @@ class _RegisterViewState extends State<RegisterView> {
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           switch(snapshot.connectionState) {
             case ConnectionState.done:
-              return Column(
-                children: [
-                  TextField(
-                    controller: _email,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      hintText: "Enter your email here",
-                    ),
-                  ),
-                  TextField(
-                    controller: _password,
-                    obscureText: true,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    decoration: InputDecoration(
-                      hintText: "Enter your password here",
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      final email = _email.text;
-                      final password = _password.text;
+              final user = FirebaseAuth.instance.currentUser;
+              if(user?.emailVerified ?? false) {
+                print("Email verified");
+              } else {
+                print("You need to verify your email");
+              }
 
-                      try {
-                        final userCredential = await FirebaseAuth.instance
-                            .createUserWithEmailAndPassword(
-                          email: email,
-                          password: password,
-                        );
-                        print(userCredential);
-                      } on FirebaseAuthException catch (error) {
-                        print(error.code);
-                        if(error.code == "invalid-email") {
-                          print(error.message);
-                        }
-                        if(error.code == "email-already-in-use") {
-                          print(error.message);
-                        }
-                        if(error.code == "weak-password") {
-                          print(error.message);
-                        }
-                      }
-                    },
-                    child: Text("Register"),
-                  ),
-                ],
-              );
+              return Text("Done");
             default:
               return Text("Loading...");
           }
@@ -107,3 +51,4 @@ class _RegisterViewState extends State<RegisterView> {
     );
   }
 }
+
