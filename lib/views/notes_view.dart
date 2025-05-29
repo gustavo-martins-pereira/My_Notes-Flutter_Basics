@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import "dart:developer";
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -15,6 +16,15 @@ class _NotesViewState extends State<NotesView> {
         title: Text("Main UI"),
         actions: [
           PopupMenuButton<MenuAction>(
+            onSelected: (value) async {
+              log(value.toString());
+              switch (value) {
+                case MenuAction.logout:
+                  final shouldLogout = await showLogoutDialog(context);
+                  log(shouldLogout.toString());
+                  break;
+              }
+            },
             itemBuilder: (context) {
               return [
                 const PopupMenuItem<MenuAction>(
@@ -32,3 +42,29 @@ class _NotesViewState extends State<NotesView> {
 }
 
 enum MenuAction { logout }
+
+Future<bool> showLogoutDialog(BuildContext context) {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text("Logout"),
+        content: Text("Are you sure you want to sign out?"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+            child: Text("Log out"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+            child: Text("Cancel"),
+          ),
+        ],
+      );
+    },
+  ).then((value) => value ?? false);
+}
