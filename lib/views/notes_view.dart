@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import "dart:developer";
 
@@ -17,11 +18,18 @@ class _NotesViewState extends State<NotesView> {
         actions: [
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
-              log(value.toString());
               switch (value) {
                 case MenuAction.logout:
                   final shouldLogout = await showLogoutDialog(context);
-                  log(shouldLogout.toString());
+                  if (shouldLogout) {
+                    await FirebaseAuth.instance.signOut();
+                    if (context.mounted) {
+                      Navigator.of(
+                        context,
+                      ).pushNamedAndRemoveUntil("/login/", (_) => false);
+                    }
+                  }
+
                   break;
               }
             },
