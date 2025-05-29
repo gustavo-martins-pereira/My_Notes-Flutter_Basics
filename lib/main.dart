@@ -6,6 +6,7 @@ import 'package:notes/views/notes_view.dart';
 import 'package:notes/views/register_view.dart';
 import 'package:notes/views/verify_email_view.dart';
 
+import 'constraints/routes.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -19,8 +20,9 @@ Future<void> main() async {
       ),
       home: const HomePage(),
       routes: {
-        "/login/": (context) => LoginView(),
-        "/register/": (context) => RegisterView(),
+        loginRoute: (context) => LoginView(),
+        registerRoute: (context) => RegisterView(),
+        notesRoute: (context) => NotesView(),
       },
     ),
   );
@@ -40,8 +42,8 @@ class HomePage extends StatelessWidget {
           case ConnectionState.done:
             final user = FirebaseAuth.instance.currentUser;
 
-            if(user != null) {
-              if(user.emailVerified) {
+            if (user != null) {
+              if (user.emailVerified) {
                 return NotesView();
               } else {
                 return VerifyEmailView();
