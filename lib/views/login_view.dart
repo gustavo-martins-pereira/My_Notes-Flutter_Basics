@@ -60,11 +60,11 @@ class _LoginViewState extends State<LoginView> {
                 }
               } on FirebaseAuthException catch (error) {
                 if (context.mounted) {
-                  showErrorDialog(context, error.message.toString());
+                  await showErrorDialog(context, error.message.toString());
                 }
               } catch (error) {
                 if (context.mounted) {
-                  showErrorDialog(context, error.toString());
+                  await showErrorDialog(context, error.toString());
                 }
               }
             },
