@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -22,9 +24,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Login"),
-      ),
+      appBar: AppBar(title: Text("Login")),
       body: Column(
         children: [
           TextField(
@@ -45,13 +45,16 @@ class _LoginViewState extends State<LoginView> {
             onPressed: () async {
               final email = _email.text;
               final password = _password.text;
-      
+
               try {
                 final userCredential = await FirebaseAuth.instance
-                    .signInWithEmailAndPassword(email: email, password: password);
-                print(userCredential);
-              } on FirebaseAuthException catch (error) {
-                print("Invalid credentials");
+                    .signInWithEmailAndPassword(
+                      email: email,
+                      password: password,
+                    );
+                log(userCredential.toString());
+              } on FirebaseAuthException {
+                log("Invalid credentials");
               }
             },
             child: Text("Login"),
