@@ -1,10 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart'
+    show FirebaseAuth, FirebaseAuthException;
 import 'package:notes/models/auth_user.dart';
 import 'package:notes/utils/exceptions/auth_exceptions.dart';
 
 import '../auth_provider.dart';
 
-class FirebaseAuthProviderImpl implements FirebaseAuthProvider {
+class AuthProviderImpl implements AuthProvider {
   @override
   Future<AuthUser> createUser({
     required String email,

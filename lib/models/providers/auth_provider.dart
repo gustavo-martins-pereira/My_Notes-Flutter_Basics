@@ -1,6 +1,6 @@
 import 'package:notes/models/auth_user.dart';
 
-abstract class FirebaseAuthProvider {
+abstract class AuthProvider {
   AuthUser? get currentUser;
 
   Future<AuthUser> logIn({required String email, required String password});
