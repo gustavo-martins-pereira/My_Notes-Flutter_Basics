@@ -67,8 +67,14 @@ class _LoginViewState extends State<LoginView> {
                   }
                 }
               } on FirebaseAuthException catch (error) {
-                if (context.mounted) {
-                  await showErrorDialog(context, error.message.toString());
+                if (error.code == "invalid-email") {
+                  await showErrorDialog(
+                    context,
+                    "The email address is badly formatted.",
+                  );
+                }
+                if (error.code == "invalid-credential") {
+                  await showErrorDialog(context, "Invalid credentials.");
                 }
               } catch (error) {
                 if (context.mounted) {

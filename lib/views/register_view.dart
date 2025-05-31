@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes/constraints/routes.dart';
@@ -55,12 +57,13 @@ class _RegisterViewState extends State<RegisterView> {
                 final user = FirebaseAuth.instance.currentUser;
                 await user?.sendEmailVerification();
 
-                if (context.mounted) {
-                  Navigator.of(context).pushNamed(verifyEmailRoute);
-                }
+                Navigator.of(context).pushNamed(verifyEmailRoute);
               } on FirebaseAuthException catch (error) {
-                if (context.mounted) {
-                  await showErrorDialog(context, error.message.toString());
+                if (error.code == "email-already-in-use") {
+                  await showErrorDialog(
+                    context,
+                    "The email address is already in use.",
+                  );
                 }
               }
             },
