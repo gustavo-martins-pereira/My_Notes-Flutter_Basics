@@ -1,6 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes/constraints/routes.dart';
+import 'package:notes/services/auth/auth_service.dart';
+import 'package:notes/utils/exceptions/auth_exceptions.dart';
 
 import '../utils/show_error_dialog.dart';
 
@@ -43,46 +44,38 @@ class _LoginViewState extends State<LoginView> {
             decoration: InputDecoration(hintText: "Enter your password here"),
           ),
           TextButton(
+            child: Text("Login"),
             onPressed: () async {
               final email = _email.text;
               final password = _password.text;
 
               try {
-                await FirebaseAuth.instance.signInWithEmailAndPassword(
+                await AuthService.firebase().logIn(
                   email: email,
                   password: password,
                 );
 
-                if (context.mounted) {
-                  final user = FirebaseAuth.instance.currentUser;
-                  if (user?.emailVerified ?? false) {
-                    Navigator.of(
-                      context,
-                    ).pushNamedAndRemoveUntil(notesRoute, (route) => false);
-                  } else {
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      verifyEmailRoute,
-                      (route) => false,
-                    );
-                  }
-                }
-              } on FirebaseAuthException catch (error) {
-                if (error.code == "invalid-email") {
-                  await showErrorDialog(
+                final user = AuthService.firebase().currentUser;
+                if (user?.isEmailVerified ?? false) {
+                  Navigator.of(
                     context,
-                    "The email address is badly formatted.",
-                  );
+                  ).pushNamedAndRemoveUntil(notesRoute, (route) => false);
+                } else {
+                  Navigator.of(
+                    context,
+                  ).pushNamedAndRemoveUntil(verifyEmailRoute, (route) => false);
                 }
-                if (error.code == "invalid-credential") {
-                  await showErrorDialog(context, "Invalid credentials.");
-                }
-              } catch (error) {
-                if (context.mounted) {
-                  await showErrorDialog(context, error.toString());
-                }
+              } on InvalidEmailException {
+                await showErrorDialog(
+                  context,
+                  "The email address is badly formatted.",
+                );
+              } on InvalidCredentialsAuthException {
+                await showErrorDialog(context, "Invalid credentials.");
+              } on GenericAuthException {
+                await showErrorDialog(context, "Authentication error");
               }
             },
-            child: Text("Login"),
           ),
           TextButton(
             onPressed: () {
